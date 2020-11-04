@@ -40,7 +40,7 @@ def window():
     #some text on the window
     text1 = tkinter.Label(root, text= userInput)
     #a declaration of where the text is in the window
-    window.create_window(200, 230, window=text1)
+    window.create_window(200, 100, window=text1)
 
     #a button
     button = tkinter.Button(text='Start typing test', command=run)
@@ -48,6 +48,4 @@ def window():
     window.create_window(200, 180, window=button)
     root.mainloop()
 
-words = getWords()
-print(words)
-
+window()
