@@ -30,9 +30,8 @@ def run():
 #the key that has been pressed is in the char part of the "event" var
 def keyPress(event):
     print("a key has been pressed")
-    #outputs the key that's been pressed
-    print(event.keysym)
-
+    #returns the key that's been pressed
+    return(event.keysym)
 
 def app():
     print("running app")
@@ -51,7 +50,6 @@ def app():
 
     #shows the first few words for test, taken from the getWords function
     text1 = tkinter.Label(root, text= getWords()[0:8])
-    text1.tag_add("correct","")
     #a declaration of where the text is in the window
     app.create_window(200, 100, window= text1)
 
