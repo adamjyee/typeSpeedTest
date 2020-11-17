@@ -1,7 +1,10 @@
 #importing all libraries
 from os import close
-import random, tkinter
+import random, tkinter, time
 
+def start():
+    saveFile = open("saveFile","a")
+    saveFile.writelines("\nstart time="+str(time.time()))
 
 #open the text file with words in
 def getWords():
@@ -30,8 +33,17 @@ def run():
 #the key that has been pressed is in the char part of the "event" var
 def keyPress(event):
     print("a key has been pressed")
+    #adds the keypress to the save file
+    saveFile("key",event.keysym)
     #returns the key that's been pressed
     return(event.keysym)
+
+
+def saveFile(fileType, data):
+    saveFile = open("saveFile","a")
+    if fileType == "key":
+        saveFile.write(","+str(data))
+
 
 def app():
     print("running app")
@@ -44,9 +56,6 @@ def app():
 
     typeBox = tkinter.Entry (root)
     app.create_window(200, 140, window=typeBox)
-
-    #taking the input from the typebox
-    userInput = typeBox.get()
 
     #shows the first few words for test, taken from the getWords function
     text1 = tkinter.Label(root, text= getWords()[0:8])
@@ -64,4 +73,5 @@ def app():
 
     root.mainloop()
 
+start()
 app()
