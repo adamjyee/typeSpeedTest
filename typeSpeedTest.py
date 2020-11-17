@@ -1,6 +1,6 @@
 #importing all libraries
 from os import close
-import random, tkinter
+import random, tkinter, time
 
 
 #open the text file with words in
@@ -22,7 +22,15 @@ def wordGenerator(wordTuple):
 
 #a function for when the user chooses to start the test
 def run():
-    print("the test would be starting")
+    #this all happens after the start test button is pressed
+    print("3")
+    time.sleep(1)
+    print("2")
+    time.sleep(1)
+    print("1")
+    time.sleep(60)
+    print("finished")
+    
 
 
 #a test function to output when a key has been pressed
