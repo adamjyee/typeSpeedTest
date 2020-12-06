@@ -47,36 +47,6 @@ def createWordList():
     return tuple(list)
 
 
-"""
-#used https://stackoverflow.com/questions/3277503/how-to-read-a-file-line-by-line-into-a-list
-def getFullRandomWordTupleFromFile():
-    #opens the save file, which has had the tuple written to it
-    with open("saveFile") as randomWordTupleFile:
-        saveFileContent = randomWordTupleFile.readlines()
-    #removes whitespace chars
-    saveFileContent = [x.strip() for x in saveFileContent]
-    previousLine = ""
-    tupleFound = False
-
-    for line in reversed(saveFileContent):
-        #making the line into a list to reduce function calls of list()
-        allChars = list(line)
-        #checks if first 20 characters are the correct ones, then opens the previous line.
-        if allChars[0:20] == list("fullRandomWordTuple="):
-            try:
-                previousLine = previousLine[1:-1]
-                randomWordTuple = tuple(previousLine)
-                tupleFound = True
-                print("tuple found")
-            except:
-                print("could not tuple previous line in getFullRandomWordTupleFromFile function")
-        print(previousLine)
-        previousLine = line
-        if tupleFound == True:
-            return(randomWordTuple)
-"""
-
-
 #a function for when the user chooses to start the test
 def run():
     #this all happens after the start test button is pressed
@@ -95,6 +65,7 @@ class App():
         self.wordsOnScreen = 12
         print("running init func")
         self.previousCount = 0
+        self.spaceCount = 0
 
 
     def createApp(self):
@@ -136,6 +107,8 @@ class App():
 #called when the user types a space char
     def spaceFunc(self,event):
         self.clearEntryBox(event)
+        self.spaceCount += 1
+        print(self.spaceCount)
         saveFile = open("saveFile","a")
         saveFile.write("\n")
         saveFile.close
@@ -170,9 +143,6 @@ class App():
         subtractCount(event)
 
 
-
-
-
     #getters
     def getWordsOnScreen(self):
         return self.wordsOnScreen
@@ -197,7 +167,7 @@ def keyPress(event):
 def saveFile(fileType, data):
     saveFile = open("saveFile","a")
     #if char = backspace then count - 1
-    if fileType == "key":
+    if fileType == "key" and (len(data) == 1):
         saveFile.write(str(data)+" ")
         with open("pickledCount", "rb") as countFile:
             count = pickle.load(countFile)
