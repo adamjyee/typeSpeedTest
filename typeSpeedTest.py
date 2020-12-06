@@ -93,7 +93,7 @@ def run():
 
 
 class App():
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         self.root = root
         self.wordsOnScreen = 8
         print("running init func")
@@ -125,18 +125,23 @@ class App():
         self.applicationWindow.create_window(200, 180, window= self.startButton)
 
         #a check to find if a key has been pressed (doesnt work yet)
-        #used website https://www.python-course.eu/tk_events_binds.php
-        self.typeBox.bind('<Key>', keyPress)
+        #used website https://www.python-course.eu/tkinter_events_binds.php
+        self.typeBox.bind("<BackSpace>",subtractCount)
+        self.typeBox.bind("<space>", self.clearEntryBox)
+        self.typeBox.bind("<Key>", keyPress)
 
 
     def changeText(self):
         pass
 
 
+    def clearEntryBox(self,event):
+        self.typeBox.delete("0","end")
+
+
     #getters
     def getWordsOnScreen(self):
         return self.wordsOnScreen
-
 
 
 
@@ -187,6 +192,16 @@ def checkKeyPress(data):
     #if the user has typed the wrong char
     else:
         pass
+
+def subtractCount(event):
+    with open("pickledCount", "rb") as countFile:
+        count = pickle.load(countFile)
+    countFile.close
+    if count > 0:
+        count -= 1
+    print("count = "+str(count))
+    with open("pickledCount","wb") as countFile:
+        pickle.dump(count, countFile)
 
 
 if __name__ == "__main__":
