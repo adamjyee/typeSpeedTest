@@ -66,6 +66,7 @@ class App():
         print("running init func")
         self.previousCount = 0
         self.spaceCount = 0
+        self.correctChar = 0
 
 
     def createApp(self):
@@ -107,11 +108,23 @@ class App():
 #called when the user types a space char
     def spaceFunc(self,event):
         self.clearEntryBox(event)
+        self.checkWord()
         self.spaceCount += 1
         print(self.spaceCount)
         saveFile = open("saveFile","a")
         saveFile.write("\n")
         saveFile.close
+
+    
+    def checkWord(self):
+        recentWord = ""
+        with open("saveFile", "r") as saveFile:
+            saveFileContents = saveFile.readlines()
+            for char in range(len((saveFileContents[-1].split()))):
+                recentWord = (recentWord + saveFileContents[-1].split()[char])
+        if recentWord == self.fullRandomWordTuple[self.spaceCount]:
+            self.correctChar += len(recentWord)
+        print("correct = "+ str(self.correctChar))
 
 
 #this is called by the space func method to clear the text box once the user has finished typing the word
@@ -148,7 +161,6 @@ class App():
         return self.wordsOnScreen
     def getPreviousCount(self):
         return self.previousCount
-
 
 
 #a test function to output when a key has been pressed
@@ -199,6 +211,7 @@ def checkKeyPress(data):
     #if the user has typed the wrong char
     else:
         pass
+
 
 #function used to subtract one from the "count"
 #unpickles the number, does the calculation, pickles the number
