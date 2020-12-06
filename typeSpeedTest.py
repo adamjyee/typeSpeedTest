@@ -7,15 +7,12 @@ def rewriteCountFile():
         pickle.dump(0, countFile)
 
 def start():
-    initialise = open("saveFile","w+")
-    initialise.close
     try:
         saveFile = open("saveFile","a")
         try:
             saveFile.writelines("\nstart time="+str(time.time()))
-            saveFile.writelines("\nkeys pressed = ")
+            saveFile.writelines("\nkeys pressed: \n")
             saveFile.close
-            
             #https://stackoverflow.com/questions/35090264/what-is-the-best-way-to-save-tuples-in-python used this here and in all other instances of pickling
             with open("pickleSaveFile", "wb") as pickleSave:
                 pickle.dump(createWordList(), pickleSave)
@@ -95,8 +92,9 @@ def run():
 class App():
     def __init__(self, *args, **kwargs):
         self.root = root
-        self.wordsOnScreen = 8
+        self.wordsOnScreen = 12
         print("running init func")
+        self.previousCount = 0
 
 
     def createApp(self):
@@ -126,22 +124,51 @@ class App():
 
         #a check to find if a key has been pressed (doesnt work yet)
         #used website https://www.python-course.eu/tkinter_events_binds.php
-        self.typeBox.bind("<BackSpace>",subtractCount)
-        self.typeBox.bind("<space>", self.clearEntryBox)
+        self.typeBox.bind("<BackSpace>",self.backspaceFunc)
+        self.typeBox.bind("<space>", self.spaceFunc)
         self.typeBox.bind("<Key>", keyPress)
 
 
     def changeText(self):
         pass
+    
+    
+    def spaceFunc(self,event):
+        self.clearEntryBox(event)
+        saveFile = open("saveFile","a")
+        saveFile.write("\n")
+        saveFile.close
+
+
+    def backspaceFunc(self, event):
+        count = 0
+        updatedFinalLine = ""
+        with open("saveFile", "r") as saveFile:
+            saveFileContent = (saveFile.readlines())
+        saveFile.close
+        print(saveFileContent[-1])
+        updatedFinalLineList = ((saveFileContent[-1]).split())[:-1]
+        for char in range(len(updatedFinalLineList)):
+            updatedFinalLine = (str(updatedFinalLine) + str(updatedFinalLineList[char]) + " ")
+        saveFileContent[-1] = updatedFinalLine
+        print(saveFileContent)
+        with open("saveFile","w") as saveFile:
+            for line in saveFileContent:
+                saveFile.write("%s" % line)
+
+        subtractCount(event)
 
 
     def clearEntryBox(self,event):
         self.typeBox.delete("0","end")
 
 
+
     #getters
     def getWordsOnScreen(self):
         return self.wordsOnScreen
+    def getPreviousCount(self):
+        return self.previousCount
 
 
 
@@ -162,7 +189,7 @@ def saveFile(fileType, data):
     saveFile = open("saveFile","a")
     #if char = backspace then count - 1
     if fileType == "key":
-        saveFile.write(","+str(data))
+        saveFile.write(str(data)+" ")
         with open("pickledCount", "rb") as countFile:
             count = pickle.load(countFile)
         countFile.close
@@ -187,6 +214,7 @@ def checkKeyPress(data):
             allCharList.append((list(FullRandomWordTuple[x]))[i])
 
     #if the user has typed the correct char
+    #moving to when the user presses space
     if data == allCharList[count]:
         pass
     #if the user has typed the wrong char
