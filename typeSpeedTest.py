@@ -131,8 +131,9 @@ class App():
 
     def changeText(self):
         pass
-    
-    
+
+
+#called when the user types a space char
     def spaceFunc(self,event):
         self.clearEntryBox(event)
         saveFile = open("saveFile","a")
@@ -140,27 +141,35 @@ class App():
         saveFile.close
 
 
+#this is called by the space func method to clear the text box once the user has finished typing the word
+    def clearEntryBox(self,event):
+        self.typeBox.delete("0","end")
+
+
+#the function that is called when backspace is pressed
     def backspaceFunc(self, event):
-        count = 0
+        #this is to declare the final line as a string
         updatedFinalLine = ""
+        #opens save file
         with open("saveFile", "r") as saveFile:
+            #reads all and saves as var
             saveFileContent = (saveFile.readlines())
         saveFile.close
-        print(saveFileContent[-1])
+        #takes the final line from the savefile list
         updatedFinalLineList = ((saveFileContent[-1]).split())[:-1]
+        #then changes the list back to a string with spaces in between
         for char in range(len(updatedFinalLineList)):
             updatedFinalLine = (str(updatedFinalLine) + str(updatedFinalLineList[char]) + " ")
+        #updates the var with the new line
         saveFileContent[-1] = updatedFinalLine
-        print(saveFileContent)
+        #writes to the file
         with open("saveFile","w") as saveFile:
             for line in saveFileContent:
                 saveFile.write("%s" % line)
-
+        #calls the function to reduce the count by one
         subtractCount(event)
 
 
-    def clearEntryBox(self,event):
-        self.typeBox.delete("0","end")
 
 
 
@@ -221,13 +230,19 @@ def checkKeyPress(data):
     else:
         pass
 
+#function used to subtract one from the "count"
+#unpickles the number, does the calculation, pickles the number
 def subtractCount(event):
+    #unpickling
     with open("pickledCount", "rb") as countFile:
         count = pickle.load(countFile)
     countFile.close
+    #check so it doesnt go negative
     if count > 0:
         count -= 1
+    #debugging (delete)
     print("count = "+str(count))
+    #repickles
     with open("pickledCount","wb") as countFile:
         pickle.dump(count, countFile)
 
