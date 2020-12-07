@@ -170,7 +170,7 @@ class App():
 
     
     def startTest(self):
-        
+        #changes the text on the countdown
         self.clearEntryBox()
         self.countdownText.configure(text= "3")
         self.countdownText.update()
@@ -182,6 +182,8 @@ class App():
         self.countdownText.update()
         time.sleep(1)
         self.countdownText.configure(text= "go!")
+
+        #resets the app for when they start typing
         self.testRunning = True
         self.startTime = time.time()
         self.spaceCount = 0
@@ -189,6 +191,7 @@ class App():
 
     def endTest(self):
         self.testRunning = False
+        #works out the cpm for the user
         self.cpm = self.correctChar/(self.timeForTest/60)
         try:
             #this deletes the buttons from the window
