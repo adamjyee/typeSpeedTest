@@ -57,7 +57,7 @@ class App():
         self.correctChar = 0
         self.startTime = 0
         self.testRunning = bool
-        self.timeForTest = 12
+        self.timeForTest = 3
         self.cpm = 0
         self.testRan = False
 
@@ -68,8 +68,6 @@ class App():
             self.fullRandomWordTuple = pickle.load(pickleFile)
         print(len(self.fullRandomWordTuple))
 
-
-
         #creates the canvas
         self.applicationWindow = tk.Canvas(self.root, width = 400, height = 300)
         self.applicationWindow.pack()
@@ -78,9 +76,9 @@ class App():
         self.applicationWindow.create_window(200, 140, window=self.typeBox)
         
         #shows the first few words for test, taken from the getWords function
-        self.text1 = tk.Label(self.root, text=(self.fullRandomWordTuple)[0:self.wordsOnScreen])
+        self.typeText = tk.Label(self.root, text=(self.fullRandomWordTuple)[0:self.wordsOnScreen])
         #a declaration of where the text is in the window
-        self.applicationWindow.create_window(200, 100, window= self.text1)
+        self.applicationWindow.create_window(200, 100, window= self.typeText)
 
         #a button
         self.startButton = tk.Button(self.root, text='Start typing test', command= self.startTest)
@@ -96,10 +94,6 @@ class App():
         self.checkTime()
 
 
-    def changeText(self):
-        pass
-
-
     def checkTime(self):
         if not(self.testRan and not(self.testRunning) == True ):
             self.root.after(100,self.checkTime)
@@ -113,13 +107,19 @@ class App():
                 pass 
 
 
+    def changeText(self,startNum):
+        self.typeText.configure(text= (self.fullRandomWordTuple[startNum:startNum+self.wordsOnScreen]))
+        self.typeText.update()
+
+
 #called when the user types a space char
     def spaceFunc(self,event):
         if self.testRunning == True:
             self.clearEntryBox()
             self.checkWord()
             self.spaceCount += 1
-            print(self.spaceCount)
+            if self.spaceCount%self.wordsOnScreen == 0:
+                self.changeText(self.spaceCount)
             saveFile = open("saveFile","a")
             saveFile.write("\n")
             saveFile.close
@@ -181,7 +181,7 @@ class App():
             print("destroying")
             self.startButton.destroy()
             self.typeBox.destroy()
-            self.text1.destroy()
+            self.typeText.destroy()
         except:
             print("destroy method failed")
         try:
@@ -190,10 +190,14 @@ class App():
                 saveFile = open("saveFile", "a")
                 saveFile.write("cpm = "+str(self.cpm))
                 print("adding cpm")
-                #shows the cpm after the test has finished
+                #creates the object to show the wpm
                 self.cpmText = tk.Label(self.root, text=("CPM = "+str(self.cpm)))
                 #a declaration of where the text is in the window
                 self.applicationWindow.create_window(200, 100, window= self.cpmText)
+                #creates the object to show the wpm
+                self.wpmText = tk.Label(self.root, text=("WPM = "+str(self.cpm/5)))
+                #tells the wpm label to be below the cpm label
+                self.applicationWindow.create_window(200, 150, window=self.wpmText)
         except:
             print("saveFile has been deleted")
 
