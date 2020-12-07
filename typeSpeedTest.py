@@ -47,26 +47,19 @@ def createWordList():
     return tuple(list)
 
 
-#a function for when the user chooses to start the test
-def run():
-    #this all happens after the start test button is pressed
-    print("3")
-    #count down from 1
-    print("2")
-    #count down 1
-    print("1")
-    #count down from 60
-    print("finished")
-
-
 class App():
-    def __init__(self, *args, **kwargs):
+    def __init__(self,root):
+        print("running init func")
         self.root = root
         self.wordsOnScreen = 12
-        print("running init func")
         self.previousCount = 0
         self.spaceCount = 0
         self.correctChar = 0
+        self.startTime = 0
+        self.testRunning = bool
+        self.timeForTest = 12
+        self.cpm = 0
+        self.testRan = False
 
 
     def createApp(self):
@@ -76,21 +69,21 @@ class App():
         print(len(self.fullRandomWordTuple))
 
 
+
         #creates the canvas
-        self.applicationWindow = tk.Canvas(root, width = 400, height = 300)
+        self.applicationWindow = tk.Canvas(self.root, width = 400, height = 300)
         self.applicationWindow.pack()
 
-        self.typeBox = tk.Entry (root)
+        self.typeBox = tk.Entry (self.root)
         self.applicationWindow.create_window(200, 140, window=self.typeBox)
-
         
         #shows the first few words for test, taken from the getWords function
-        self.text1 = tk.Label(root, text=(self.fullRandomWordTuple)[0:self.wordsOnScreen])
+        self.text1 = tk.Label(self.root, text=(self.fullRandomWordTuple)[0:self.wordsOnScreen])
         #a declaration of where the text is in the window
         self.applicationWindow.create_window(200, 100, window= self.text1)
 
         #a button
-        self.startButton = tk.Button(root, text='Start typing test', command= run)
+        self.startButton = tk.Button(self.root, text='Start typing test', command= self.startTest)
         #a declaration of where the button is in the window
         self.applicationWindow.create_window(200, 180, window= self.startButton)
 
@@ -98,22 +91,38 @@ class App():
         #used website https://www.python-course.eu/tkinter_events_binds.php
         self.typeBox.bind("<BackSpace>",self.backspaceFunc)
         self.typeBox.bind("<space>", self.spaceFunc)
-        self.typeBox.bind("<Key>", keyPress)
+        self.typeBox.bind("<Key>", self.keyPress)
+
+        self.checkTime()
 
 
     def changeText(self):
         pass
 
 
+    def checkTime(self):
+        if not(self.testRan and not(self.testRunning) == True ):
+            self.root.after(100,self.checkTime)
+            if self.testRunning == True:
+                print(time.time() - self.startTime)
+            try:
+                if (self.startTime < time.time() - self.timeForTest) and self.testRan == True:
+                    print("test finished")
+                    self.endTest()
+            except:
+                pass 
+
+
 #called when the user types a space char
     def spaceFunc(self,event):
-        self.clearEntryBox(event)
-        self.checkWord()
-        self.spaceCount += 1
-        print(self.spaceCount)
-        saveFile = open("saveFile","a")
-        saveFile.write("\n")
-        saveFile.close
+        if self.testRunning == True:
+            self.clearEntryBox()
+            self.checkWord()
+            self.spaceCount += 1
+            print(self.spaceCount)
+            saveFile = open("saveFile","a")
+            saveFile.write("\n")
+            saveFile.close
 
     
     def checkWord(self):
@@ -128,32 +137,65 @@ class App():
 
 
 #this is called by the space func method to clear the text box once the user has finished typing the word
-    def clearEntryBox(self,event):
+    def clearEntryBox(self):
         self.typeBox.delete("0","end")
 
 
 #the function that is called when backspace is pressed
     def backspaceFunc(self, event):
-        #this is to declare the final line as a string
-        updatedFinalLine = ""
-        #opens save file
-        with open("saveFile", "r") as saveFile:
-            #reads all and saves as var
-            saveFileContent = (saveFile.readlines())
-        saveFile.close
-        #takes the final line from the savefile list
-        updatedFinalLineList = ((saveFileContent[-1]).split())[:-1]
-        #then changes the list back to a string with spaces in between
-        for char in range(len(updatedFinalLineList)):
-            updatedFinalLine = (str(updatedFinalLine) + str(updatedFinalLineList[char]) + " ")
-        #updates the var with the new line
-        saveFileContent[-1] = updatedFinalLine
-        #writes to the file
-        with open("saveFile","w") as saveFile:
-            for line in saveFileContent:
-                saveFile.write("%s" % line)
-        #calls the function to reduce the count by one
-        subtractCount(event)
+        if self.testRunning == True:
+            #this is to declare the final line as a string
+            updatedFinalLine = ""
+            #opens save file
+            with open("saveFile", "r") as saveFile:
+                #reads all and saves as var
+                saveFileContent = (saveFile.readlines())
+            saveFile.close
+            #takes the final line from the savefile list
+            updatedFinalLineList = ((saveFileContent[-1]).split())[:-1]
+            #then changes the list back to a string with spaces in between
+            for char in range(len(updatedFinalLineList)):
+                updatedFinalLine = (str(updatedFinalLine) + str(updatedFinalLineList[char]) + " ")
+            #updates the var with the new line
+            saveFileContent[-1] = updatedFinalLine
+            #writes to the file
+            with open("saveFile","w") as saveFile:
+                for line in saveFileContent:
+                    saveFile.write("%s" % line)
+            #calls the function to reduce the count by one
+            subtractCount(event)
+
+    
+    def startTest(self):
+        self.testRunning = True
+        self.startTime = time.time()
+        self.spaceCount = 0
+        self.testRan = True
+        self.clearEntryBox()
+
+    def endTest(self):
+        self.testRunning = False
+        self.cpm = self.correctChar/(self.timeForTest/60)
+        try:
+            #this deletes the buttons from the window
+            print("destroying")
+            self.startButton.destroy()
+            self.typeBox.destroy()
+            self.text1.destroy()
+        except:
+            print("destroy method failed")
+        try:
+            saveFile = open("saveFile","r")
+            if ["c","p","m"] != list(saveFile.readlines()[-1])[:3]:
+                saveFile = open("saveFile", "a")
+                saveFile.write("cpm = "+str(self.cpm))
+                print("adding cpm")
+                #shows the cpm after the test has finished
+                self.cpmText = tk.Label(self.root, text=("CPM = "+str(self.cpm)))
+                #a declaration of where the text is in the window
+                self.applicationWindow.create_window(200, 100, window= self.cpmText)
+        except:
+            print("saveFile has been deleted")
 
 
     #getters
@@ -161,20 +203,23 @@ class App():
         return self.wordsOnScreen
     def getPreviousCount(self):
         return self.previousCount
+    def gettestRunningVar(self):
+        return self.testRunning
 
 
-#a test function to output when a key has been pressed
-#has to have arg event otherwise outputs an error
-#the key that has been pressed is in the char part of the "event" var
-def keyPress(event):
-    print("a key has been pressed")
-    #adds the keypress to the save file using the savefile function
-    #this function also calls the check keypress function which checks if the user has correctly entered the next key
-    saveFile("key",event.keysym)
-    #returns the key that's been pressed
-    checkKeyPress(event.keysym)
-    return(event.keysym)
-
+    #a test function to output when a key has been pressed
+    #has to have arg event otherwise outputs an error
+    #the key that has been pressed is in the char part of the "event" var
+    def keyPress(self,event):
+        if self.gettestRunningVar() == True:
+            print("a key has been pressed")
+            #adds the keypress to the save file using the savefile function
+            #this function also calls the check keypress function which checks if the user has correctly entered the next key
+            saveFile("key",event.keysym)
+            #returns the key that's been pressed
+            return(event.keysym)
+        else:
+            print("press the start button to start")
 
 def saveFile(fileType, data):
     saveFile = open("saveFile","a")
@@ -189,28 +234,6 @@ def saveFile(fileType, data):
         with open("pickledCount","wb") as countFile:
             pickle.dump(count, countFile)
     return(data)
-
-
-#function called by keypress to compare between the key that's been pressed and the word tuple
-def checkKeyPress(data):
-    with open("pickleSaveFile", "rb") as tupleFile:
-        FullRandomWordTuple = pickle.load(tupleFile)
-    with open("pickledCount", "rb") as countFile:
-        count = pickle.load(countFile)
-    #this is a list that has all the words as just characters
-    #this allows me to search for the specific letter in the sequence
-    allCharList = []
-    for x in range(len(FullRandomWordTuple)):
-        for i in range(len(FullRandomWordTuple[x])):
-            allCharList.append((list(FullRandomWordTuple[x]))[i])
-
-    #if the user has typed the correct char
-    #moving to when the user presses space
-    if data == allCharList[count]:
-        pass
-    #if the user has typed the wrong char
-    else:
-        pass
 
 
 #function used to subtract one from the "count"
@@ -230,11 +253,14 @@ def subtractCount(event):
         pickle.dump(count, countFile)
 
 
-if __name__ == "__main__":
+def main():
     #initialising the tk interpreter (would be done anyway after the first widget, but useful)
     root = tk.Tk()
     rewriteCountFile()
     start()
     #used this https://stackoverflow.com/questions/17466561/best-way-to-structure-a-tkinter-application
-    App().createApp()
+    App(root).createApp()
     root.mainloop()
+
+if __name__ == "__main__":
+    main()
