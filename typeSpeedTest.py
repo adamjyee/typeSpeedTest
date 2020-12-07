@@ -80,6 +80,9 @@ class App():
         #a declaration of where the text is in the window
         self.applicationWindow.create_window(200, 100, window= self.typeText)
 
+        self.countdownText = tk.Label(self.root, text=("press the button to start"))
+        self. applicationWindow.create_window(200, 75, window= self.countdownText)
+
         #a button
         self.startButton = tk.Button(self.root, text='Start typing test', command= self.startTest)
         #a declaration of where the button is in the window
@@ -107,7 +110,7 @@ class App():
                 pass 
 
 
-    def changeText(self,startNum):
+    def changeTypeText(self,startNum):
         self.typeText.configure(text= (self.fullRandomWordTuple[startNum:startNum+self.wordsOnScreen]))
         self.typeText.update()
 
@@ -119,7 +122,7 @@ class App():
             self.checkWord()
             self.spaceCount += 1
             if self.spaceCount%self.wordsOnScreen == 0:
-                self.changeText(self.spaceCount)
+                self.changeTypeText(self.spaceCount)
             saveFile = open("saveFile","a")
             saveFile.write("\n")
             saveFile.close
@@ -167,11 +170,22 @@ class App():
 
     
     def startTest(self):
+        
+        self.clearEntryBox()
+        self.countdownText.configure(text= "3")
+        self.countdownText.update()
+        time.sleep(1)
+        self.countdownText.configure(text= "2")
+        self.countdownText.update()
+        time.sleep(1)
+        self.countdownText.configure(text= "1")
+        self.countdownText.update()
+        time.sleep(1)
+        self.countdownText.configure(text= "go!")
         self.testRunning = True
         self.startTime = time.time()
         self.spaceCount = 0
         self.testRan = True
-        self.clearEntryBox()
 
     def endTest(self):
         self.testRunning = False
