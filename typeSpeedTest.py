@@ -42,7 +42,7 @@ def wordGenerator(wordTuple):
 def createWordList():
     wordTuple = getWords()
     list = []
-    for x in range(300):
+    for x in range(10000):
         list.append(wordGenerator(wordTuple))
     return tuple(list)
 
@@ -80,13 +80,25 @@ class App():
         #a declaration of where the text is in the window
         self.applicationWindow.create_window(200, 100, window= self.typeText)
 
+        #shows the countdown after the button is pressed
         self.countdownText = tk.Label(self.root, text=("press the button to start"))
+        #attaches it to the window
         self. applicationWindow.create_window(200, 75, window= self.countdownText)
 
-        #a button
+        #a button to start the program with
         self.startButton = tk.Button(self.root, text='Start typing test', command= self.startTest)
         #a declaration of where the button is in the window
         self.applicationWindow.create_window(200, 180, window= self.startButton)
+
+        #a button for the user to increase the time they have for the test
+        self.increaseTimeButton = tk.Button(self.root, text=("Increase time for test\nTime = "+ str(self.timeForTest)), command= self.increaseTime)
+        #attaches the button to the window
+        self.applicationWindow.create_window(335, 250, window= self.increaseTimeButton)
+
+        #a button for the user to decrease the time they have for the test
+        self.decreaseTimeButton = tk.Button(self.root, text=("Decrease time for test\nTime = "+str(self.timeForTest)), command= self.decreaseTime)
+        #attaches the button to the window
+        self.applicationWindow.create_window(65, 250, window= self.decreaseTimeButton)
 
         #a check to find if a key has been pressed (doesnt work yet)
         #used website https://www.python-course.eu/tkinter_events_binds.php
@@ -113,6 +125,23 @@ class App():
     def changeTypeText(self,startNum):
         self.typeText.configure(text= (self.fullRandomWordTuple[startNum:startNum+self.wordsOnScreen]))
         self.typeText.update()
+
+    def increaseTime(self):
+        self.timeForTest += 1
+        self.updateTimeButtons()
+
+    def decreaseTime(self):
+        if self.timeForTest > 1:
+            self.timeForTest -= 1
+            self.updateTimeButtons()
+        else:
+            self.decreaseTimeButton.configure(text= "Cannot go lower than\none second for the test")
+
+    def updateTimeButtons(self):
+        self.increaseTimeButton.configure(text= ("Increase time for test\nTime = "+ str(self.timeForTest)))
+        self.increaseTimeButton.update()
+        self.decreaseTimeButton.configure(text= ("Decrease time for test\nTime = "+str(self.timeForTest)))
+        self.decreaseTimeButton.update()
 
 
 #called when the user types a space char
@@ -183,6 +212,10 @@ class App():
         time.sleep(1)
         self.countdownText.configure(text= "go!")
 
+        #deletes the time changing buttons
+        self.increaseTimeButton.destroy()
+        self.decreaseTimeButton.destroy()
+
         #resets the app for when they start typing
         self.testRunning = True
         self.startTime = time.time()
@@ -199,6 +232,7 @@ class App():
             self.startButton.destroy()
             self.typeBox.destroy()
             self.typeText.destroy()
+            self.countdownText.destroy()
         except:
             print("destroy method failed")
         try:
