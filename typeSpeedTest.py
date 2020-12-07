@@ -57,7 +57,7 @@ class App():
         self.correctChar = 0
         self.startTime = 0
         self.testRunning = bool
-        self.timeForTest = 3
+        self.timeForTest = 6
         self.cpm = 0
         self.testRan = False
 
@@ -203,8 +203,10 @@ class App():
             print("destroy method failed")
         try:
             saveFile = open("saveFile","r")
+            #checks if the cpm has been written to the file yet
             if ["c","p","m"] != list(saveFile.readlines()[-1])[:3]:
                 saveFile = open("saveFile", "a")
+                #if not already written to the file, writes it
                 saveFile.write("cpm = "+str(self.cpm))
                 print("adding cpm")
                 #creates the object to show the wpm
@@ -228,7 +230,7 @@ class App():
         return self.testRunning
 
 
-    #a test function to output when a key has been pressed
+    #a function to output when a key has been pressed
     #has to have arg event otherwise outputs an error
     #the key that has been pressed is in the char part of the "event" var
     def keyPress(self,event):
@@ -241,6 +243,7 @@ class App():
             return(event.keysym)
         else:
             print("press the start button to start")
+
 
 def saveFile(fileType, data):
     saveFile = open("saveFile","a")
