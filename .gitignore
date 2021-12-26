@@ -1,0 +1,6 @@
+#ignore the pickle count
+pickledCount
+#ignore the pickle save
+pickleSaveFile
+#ignore save
+saveFile
