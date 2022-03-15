@@ -57,7 +57,7 @@ class App():
         self.correctChar = 0
         self.startTime = 0
         self.testRunning = bool
-        self.timeForTest = 6
+        self.timeForTest = 60
         self.cpm = 0
         self.testRan = False
 
